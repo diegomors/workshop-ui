@@ -1,0 +1,18 @@
+{
+  "Index": {
+    "title": "Mizz"
+  },
+  "Auth": {
+    "login": "Entrar",
+    "email": "E-mail",
+    "password": "Senha",
+    "signup": "Cadastrar",
+    "reset": "Recuperar Senha",
+    "submit": "Enviar",
+    "name": "Nome",
+    "phone": "Telefone",
+    "invalidEmail": "Email inválido",
+    "weakPassword": "A senha deve ter pelo menos 6 caracteres",
+    "required": "Campo obrigatório"
+  }
+}
