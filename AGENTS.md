@@ -16,6 +16,7 @@ The goal is **pragmatic consistency** — apply these patterns where they reduce
 6. [Documentation & Comments](#documentation--comments)
 7. [Error Handling](#error-handling)
 8. [Observability](#observability)
+9. [Mocking & Repository Pattern](#mocking--repository-pattern)
 
 ---
 
@@ -36,6 +37,10 @@ The project follows a **Clean Architecture** approach adapted for Next.js App Ro
 └──────┬───────────────────────────────────────────────┘
        │  depends on ▼
 ┌──────────────────────────────────────────────────────┐
+│  lib/repositories/ (Interfaces & implementations)    │
+└──────┬───────────────────────────────────────────────┘
+       │  depends on ▼
+┌──────────────────────────────────────────────────────┐
 │  lib/supabase/     (Infrastructure — DB clients)     │
 │  lib/utils.ts      (Cross-cutting utilities)         │
 │  types/            (Domain types & interfaces)       │
@@ -46,11 +51,12 @@ The project follows a **Clean Architecture** approach adapted for Next.js App Ro
 
 | Layer | May depend on | Must NOT depend on |
 |---|---|---|
-| `app/`, `components/` | `lib/actions/`, `lib/hooks/`, `lib/validations/`, `types/`, `components/ui/` | `lib/supabase/` directly |
-| `lib/actions/` (Server Actions) | `lib/supabase/`, `lib/validations/`, `types/` | `app/`, `components/`, `lib/hooks/` |
-| `lib/hooks/` | `types/`, `lib/actions/` (via server action imports) | `lib/supabase/` |
-| `lib/validations/` | `types/` (if needed) | `lib/actions/`, `lib/supabase/`, `app/` |
-| `lib/supabase/` | external packages only | any `app/`, `lib/actions/`, `lib/hooks/` |
+| `app/`, `components/` | `lib/actions/`, `lib/hooks/`, `lib/validations/`, `types/`, `components/ui/` | `lib/repositories/`, `lib/supabase/` directly |
+| `lib/actions/` (Server Actions) | `lib/repositories/`, `lib/validations/`, `types/` | `app/`, `components/`, `lib/hooks/`, `lib/supabase/` directly |
+| `lib/repositories/` | `lib/supabase/`, `types/`, `lib/validations/` | `app/`, `components/`, `lib/actions/` |
+| `lib/hooks/` | `types/`, `lib/actions/` (via server action imports) | `lib/repositories/`, `lib/supabase/` |
+| `lib/validations/` | `types/` (if needed) | `lib/actions/`, `lib/repositories/`, `app/` |
+| `lib/supabase/` | external packages only | any `app/`, `lib/actions/`, `lib/repositories/` |
 | `types/` | nothing (pure type definitions) | any other layer |
 
 ### Where New Code Goes
@@ -60,6 +66,7 @@ The project follows a **Clean Architecture** approach adapted for Next.js App Ro
 | A new page or route | `app/` following Next.js App Router conventions |
 | A reusable visual component | `components/` (domain-specific) or `components/ui/` (generic/shadcn) |
 | Server-side data mutations or queries | `lib/actions/<domain>.ts` |
+| Repository Interfaces & Implementations | `lib/repositories/` |
 | Client-side state management or side effects | `lib/hooks/use-<name>.tsx` |
 | Input validation schemas (Zod) | `lib/validations/<domain>.ts` |
 | Database client setup or infra utilities | `lib/supabase/` |
@@ -119,13 +126,14 @@ Prefer extension over modification:
 
 ### Dependency Inversion
 
-- Components and pages depend on **Server Actions** (abstraction), never on `lib/supabase/` directly.
-- The Supabase client is created through factory functions (`createClient()`), not instantiated inline.
-- If the data source changes, only `lib/supabase/` and `lib/actions/` need to change — UI remains untouched.
+- **Server Actions** depend on **Repositories** (interfaces), not on direct database implementation.
+- **Repositories** have multiple implementations: `Supabase<Name>Repository` and `Mock<Name>Repository`.
+- The code switches between implementations via a factory based on the `NEXT_PUBLIC_USE_MOCKS` environment variable.
+- If the data source changes, only the repository implementation needs to change — UI and Server Actions remain untouched.
 
 ### Interface Segregation
 
-- Server Actions export only the functions that pages/components need. Don't create "god modules" exporting dozens of unrelated functions.
+- Repositories and Server Actions export only what is strictly necessary. Don't create "god modules" exporting dozens of unrelated functions.
 - Custom hooks expose a focused API. The `useCart()` hook returns only `{ state, dispatch, totalCount, totalPrice }` — not internal reducer details.
 
 ### Reusability — Check Before You Build
@@ -320,5 +328,6 @@ Database-level observability is handled through Supabase:
 6. **Check existing `components/ui/`** before creating new UI primitives.
 7. **Follow the return convention** for mutation Server Actions: `{ data }` | `{ error }` | `{ success }`.
 8. **Type everything** — avoid `any`. Use `types/` for domain types, Zod for runtime validation.
-9. **Keep it lean** — don't add abstractions, wrappers, or services unless there's a clear reuse or decoupling benefit. This is a Next.js app, not an enterprise backend.
-10. **Read Next.js docs** — this project uses Next.js 16 with App Router. Read `node_modules/next/dist/docs/` for current APIs and conventions. Heed deprecation notices.
+9. **Keep it lean** — don't add abstractions, wrappers, or services unless there's a clear reuse or decoupling benefit. Repositories are the exception, required for decoupling from Supabase/Mocks.
+10. **Implement Mocks for every feature** — every new domain or repository MUST have a corresponding Mock implementation. Use `npm run dev:mock` to validate.
+11. **Read Next.js docs** — this project uses Next.js 16 with App Router. Read `node_modules/next/dist/docs/` for current APIs and conventions. Heed deprecation notices.
