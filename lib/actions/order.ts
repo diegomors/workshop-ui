@@ -10,6 +10,7 @@ import { createOrderSchema, transitionOrderSchema, CreateOrderInput, TransitionO
 import { validateOrderTransition } from '@/lib/order-machine'
 import { Order, OrderStatus, OrderWithDetails, OrderStatusHistory } from '@/types/order'
 import { revalidatePath } from 'next/cache'
+import { refundPayment } from '@/lib/actions/payment'
 
 type ActionResult<T> =
   | { data: T; error?: never }
@@ -91,6 +92,14 @@ export async function transitionOrder(payload: TransitionOrderInput): Promise<Ac
       validated.data.new_status,
       userId
     )
+
+    // PRD-05 US-05.5: Refund on cancellation
+    if (validated.data.new_status === 'CANCELADO' && currentOrder.payment_intent_id) {
+      const refundResult = await refundPayment(currentOrder.payment_intent_id)
+      if (refundResult.error) {
+        console.error('[order/transitionOrder] Refund failed (manual reconciliation needed):', refundResult.error)
+      }
+    }
 
     revalidatePath(`/orders/${validated.data.order_id}`)
     revalidatePath('/orders')
