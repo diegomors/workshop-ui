@@ -12,6 +12,7 @@ export default function AdminLayout({
     { href: '/admin/menu', label: 'Cardápio' },
     { href: '/admin/orders', label: 'Pedidos' },
     { href: '/admin/reports', label: 'Relatórios' },
+    { href: '/admin/settings', label: 'Configurações' },
   ]
 
   return (

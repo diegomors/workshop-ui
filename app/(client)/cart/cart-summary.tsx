@@ -85,9 +85,11 @@ export function CartSummary() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <Button size="lg" className="w-full text-lg" onClick={() => alert('Continua no PRD-05...')}>
-            Continuar para Pagamento
-          </Button>
+          <Link href="/checkout">
+            <Button size="lg" className="w-full text-lg">
+              Continuar para Pagamento
+            </Button>
+          </Link>
           <Link href={`/restaurant/${restaurantId}`} className="text-center text-blue-600 hover:underline">
             Adicionar mais itens
           </Link>

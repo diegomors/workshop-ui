@@ -8,6 +8,7 @@ export type Restaurant = {
   latitude: number | null
   longitude: number | null
   coverage_radius_km: number
+  stripe_account_id: string | null
   created_at: string
 }
 
