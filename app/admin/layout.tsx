@@ -9,6 +9,7 @@ export default function AdminLayout({
 }) {
   const navItems = [
     { href: '/admin', label: 'Dashboard' },
+    { href: '/admin/menu', label: 'Cardápio' },
     { href: '/admin/orders', label: 'Pedidos' },
     { href: '/admin/reports', label: 'Relatórios' },
   ]
