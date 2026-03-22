@@ -59,22 +59,17 @@ export async function transitionOrder(payload: TransitionOrderInput): Promise<Ac
     let userId: string
     let role: string
 
-    if (process.env.NEXT_PUBLIC_USE_MOCKS === 'true') {
-      userId = 'mock-admin-id'
-      role = 'admin'
-    } else {
-      if (!user) return { error: 'Não autorizado' }
-      userId = user.id
-      
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single()
-      
-      if (!profile) return { error: 'Perfil não encontrado' }
-      role = profile.role
-    }
+    if (!user) return { error: 'Não autorizado' }
+    userId = user.id
+    
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+    
+    if (!profile) return { error: 'Perfil não encontrado' }
+    role = profile.role
 
     const repo = getOrderRepository()
     const currentOrder = await repo.getOrder(validated.data.order_id)
@@ -139,17 +134,10 @@ export async function getRestaurantOrders(restaurantId: string, statuses?: Order
  */
 export async function getCustomerOrders(): Promise<Order[]> {
   try {
-    const useMocks = process.env.NEXT_PUBLIC_USE_MOCKS === 'true'
-    let customerId: string
-
-    if (useMocks) {
-      customerId = 'mock-customer-id'
-    } else {
-      const supabase = await createClient()
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return []
-      customerId = user.id
-    }
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+    const customerId = user.id
 
     const repo = getOrderRepository()
     return await repo.getCustomerOrders(customerId)

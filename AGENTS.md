@@ -16,7 +16,6 @@ The goal is **pragmatic consistency** — apply these patterns where they reduce
 6. [Documentation & Comments](#documentation--comments)
 7. [Error Handling](#error-handling)
 8. [Observability](#observability)
-9. [Mocking & Repository Pattern](#mocking--repository-pattern)
 
 ---
 
@@ -127,8 +126,7 @@ Prefer extension over modification:
 ### Dependency Inversion
 
 - **Server Actions** depend on **Repositories** (interfaces), not on direct database implementation.
-- **Repositories** have multiple implementations: `Supabase<Name>Repository` and `Mock<Name>Repository`.
-- The code switches between implementations via a factory based on the `NEXT_PUBLIC_USE_MOCKS` environment variable.
+- This allows for easier testing and decoupling from the database provider.
 - If the data source changes, only the repository implementation needs to change — UI and Server Actions remain untouched.
 
 ### Interface Segregation
@@ -329,5 +327,4 @@ Database-level observability is handled through Supabase:
 7. **Follow the return convention** for mutation Server Actions: `{ data }` | `{ error }` | `{ success }`.
 8. **Type everything** — avoid `any`. Use `types/` for domain types, Zod for runtime validation.
 9. **Keep it lean** — don't add abstractions, wrappers, or services unless there's a clear reuse or decoupling benefit. Repositories are the exception, required for decoupling from Supabase/Mocks.
-10. **Implement Mocks for every feature** — every new domain or repository MUST have a corresponding Mock implementation. Use `npm run dev:mock` to validate.
-11. **Read Next.js docs** — this project uses Next.js 16 with App Router. Read `node_modules/next/dist/docs/` for current APIs and conventions. Heed deprecation notices.
+10. **Read Next.js docs** — this project uses Next.js 16 with App Router. Read `node_modules/next/dist/docs/` for current APIs and conventions. Heed deprecation notices.

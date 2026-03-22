@@ -12,7 +12,6 @@ export default async function AdminMenuPage() {
 
   const repo = getMenuRepository()
   
-  // No admin, se estiver em modo mock, ignoramos o owner_id do Supabase
   const rest = await repo.getRestaurantByOwner(user.id)
   
   if (!rest) {
@@ -25,11 +24,6 @@ export default async function AdminMenuPage() {
     <div className="space-y-6 max-w-4xl mx-auto py-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Categorias do Cardápio</h1>
-        {process.env.NEXT_PUBLIC_USE_MOCKS === 'true' && (
-          <span className="text-sm bg-yellow-100 text-yellow-700 px-3 py-1 rounded-md font-medium">
-            Modo de Demonstração (MOCK)
-          </span>
-        )}
       </div>
       <CategoryList initialCategories={categories} restaurantId={rest.id} />
     </div>

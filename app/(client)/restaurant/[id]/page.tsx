@@ -1,5 +1,5 @@
 import { getRestaurantMenu } from '@/lib/actions/menu'
-import { RestaurantMenu } from './restaurant-menu'
+import { RestaurantMenu } from '@/app/(client)/restaurant/[id]/restaurant-menu'
 
 export default async function RestaurantMenuPage({ params }: { params: { id: string } }) {
   const p = await params
@@ -29,11 +29,6 @@ export default async function RestaurantMenuPage({ params }: { params: { id: str
     <div className="max-w-4xl mx-auto py-8 px-4 space-y-8">
       <div className="flex justify-between items-baseline border-b pb-4">
         <h1 className="text-4xl font-extrabold text-blue-600">{restaurant.name}</h1>
-        {process.env.NEXT_PUBLIC_USE_MOCKS === 'true' && (
-          <span className="text-xs font-semibold bg-yellow-100 text-yellow-700 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
-            Mock
-          </span>
-        )}
       </div>
       <RestaurantMenu categories={categories} restaurantId={restaurant.id} />
     </div>
