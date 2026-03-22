@@ -10,9 +10,10 @@ import { getStatusMessage } from '@/lib/order-machine'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { Loader2, ArrowLeft, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { CancelOrderModal } from '@/components/cancel-order-modal'
+import { DeliveryTrackingMap } from '@/components/delivery-tracking-map'
 
 type OrderTrackingProps = {
   params: Promise<{ id: string }>
@@ -121,6 +122,14 @@ export default function OrderTracking({ params }: OrderTrackingProps) {
           </CardContent>
         </Card>
 
+        {order.status === 'EM_ROTA' && (
+          <DeliveryTrackingMap
+            orderId={order.id}
+            customerLatitude={order.customer_latitude ?? null}
+            customerLongitude={order.customer_longitude ?? null}
+          />
+        )}
+
         {order.delivery_code && (order.status === 'PRONTO_PARA_RETIRADA' || order.status === 'EM_ROTA') && (
           <Card className="bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30">
             <CardContent className="p-6 text-center space-y-2">
@@ -133,6 +142,15 @@ export default function OrderTracking({ params }: OrderTrackingProps) {
               </p>
             </CardContent>
           </Card>
+        )}
+
+        {(order.status === 'PRONTO_PARA_RETIRADA' || order.status === 'EM_ROTA') && (
+          <Link href={`/orders/${order.id}/chat`}>
+            <Button variant="outline" className="w-full h-12 font-bold gap-2">
+              <MessageCircle className="size-5" />
+              Chat com Entregador
+            </Button>
+          </Link>
         )}
 
         <Card>
