@@ -27,18 +27,12 @@ CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 
 -- RLS profiles
-DO $$ BEGIN
-  CREATE POLICY "profiles_select_authenticated" ON profiles FOR SELECT TO authenticated USING (true);
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+DROP POLICY IF EXISTS "profiles_select_authenticated" ON profiles;
+CREATE POLICY "profiles_select_authenticated" ON profiles FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "profiles_update_own" ON profiles;
+CREATE POLICY "profiles_update_own" ON profiles FOR UPDATE TO authenticated USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
+DROP POLICY IF EXISTS "profiles_insert_own" ON profiles;
+CREATE POLICY "profiles_insert_own" ON profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
 
 -- Trigger de criação de perfil
 CREATE OR REPLACE FUNCTION handle_new_user()
@@ -72,18 +66,48 @@ CREATE TABLE IF NOT EXISTS restaurants (
 CREATE INDEX IF NOT EXISTS idx_restaurants_owner ON restaurants(owner_id);
 ALTER TABLE restaurants ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-  CREATE POLICY "restaurants_select_active" ON restaurants FOR SELECT TO authenticated USING (is_active = true OR owner_id = auth.uid());
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "restaurants_insert_owner" ON restaurants FOR INSERT TO authenticated WITH CHECK (owner_id = auth.uid());
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "restaurants_update_owner" ON restaurants FOR UPDATE TO authenticated USING (owner_id = auth.uid()) WITH CHECK (owner_id = auth.uid());
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+-- Helpers para evitar recursão infinita no RLS
+CREATE OR REPLACE FUNCTION public.check_is_restaurant_staff(res_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.restaurant_staff
+    WHERE restaurant_id = res_id AND user_id = auth.uid()
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.check_is_restaurant_owner(res_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.restaurants
+    WHERE id = res_id AND owner_id = auth.uid()
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.check_is_restaurant_admin(res_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN (
+    check_is_restaurant_owner(res_id)
+    OR
+    EXISTS (
+      SELECT 1 FROM public.restaurant_staff
+      WHERE restaurant_id = res_id AND user_id = auth.uid() AND role = 'admin'
+    )
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP POLICY IF EXISTS "restaurants_select_active" ON restaurants;
+CREATE POLICY "restaurants_select_active" ON restaurants FOR SELECT TO authenticated
+  USING (is_active = true OR owner_id = auth.uid());
+DROP POLICY IF EXISTS "restaurants_insert_owner" ON restaurants;
+CREATE POLICY "restaurants_insert_owner" ON restaurants FOR INSERT TO authenticated WITH CHECK (owner_id = auth.uid());
+DROP POLICY IF EXISTS "restaurants_update_owner" ON restaurants;
+CREATE POLICY "restaurants_update_owner" ON restaurants FOR UPDATE TO authenticated USING (owner_id = auth.uid()) WITH CHECK (owner_id = auth.uid());
 
 -- restaurant_staff
 CREATE TABLE IF NOT EXISTS restaurant_staff (
@@ -98,21 +122,15 @@ CREATE INDEX IF NOT EXISTS idx_staff_restaurant ON restaurant_staff(restaurant_i
 CREATE INDEX IF NOT EXISTS idx_staff_user ON restaurant_staff(user_id);
 ALTER TABLE restaurant_staff ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-  CREATE POLICY "staff_select_same_restaurant" ON restaurant_staff FOR SELECT TO authenticated
-    USING (restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid()) OR restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "staff_insert_owner" ON restaurant_staff FOR INSERT TO authenticated
-    WITH CHECK (restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "staff_delete_owner" ON restaurant_staff FOR DELETE TO authenticated
-    USING (restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+DROP POLICY IF EXISTS "staff_select_same_restaurant" ON restaurant_staff;
+CREATE POLICY "staff_select_same_restaurant" ON restaurant_staff FOR SELECT TO authenticated
+  USING (user_id = auth.uid() OR check_is_restaurant_owner(restaurant_id));
+DROP POLICY IF EXISTS "staff_insert_owner" ON restaurant_staff;
+CREATE POLICY "staff_insert_owner" ON restaurant_staff FOR INSERT TO authenticated
+  WITH CHECK (check_is_restaurant_owner(restaurant_id));
+DROP POLICY IF EXISTS "staff_delete_owner" ON restaurant_staff;
+CREATE POLICY "staff_delete_owner" ON restaurant_staff FOR DELETE TO authenticated
+  USING (check_is_restaurant_owner(restaurant_id));
 
 -- ===========================================
 -- 2. Tabelas do PRD-02 (Cardápio)
@@ -130,26 +148,24 @@ CREATE INDEX IF NOT EXISTS idx_categories_restaurant ON categories(restaurant_id
 CREATE INDEX IF NOT EXISTS idx_categories_sort ON categories(restaurant_id, sort_order);
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-  CREATE POLICY "categories_select_public" ON categories FOR SELECT TO authenticated
-    USING (restaurant_id IN (SELECT id FROM restaurants WHERE is_active = true) OR restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()) OR restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "categories_insert_admin" ON categories FOR INSERT TO authenticated
-    WITH CHECK (restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()) OR restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid() AND role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "categories_update_admin" ON categories FOR UPDATE TO authenticated
-    USING (restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()) OR restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid() AND role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "categories_delete_admin" ON categories FOR DELETE TO authenticated
-    USING (restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()) OR restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid() AND role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+DROP POLICY IF EXISTS "categories_select_public" ON categories;
+CREATE POLICY "categories_select_public" ON categories FOR SELECT TO authenticated
+  USING (
+    restaurant_id IN (SELECT id FROM restaurants WHERE is_active = true) 
+    OR 
+    check_is_restaurant_staff(restaurant_id) 
+    OR 
+    check_is_restaurant_owner(restaurant_id)
+  );
+DROP POLICY IF EXISTS "categories_insert_admin" ON categories;
+CREATE POLICY "categories_insert_admin" ON categories FOR INSERT TO authenticated
+  WITH CHECK (check_is_restaurant_admin(restaurant_id));
+DROP POLICY IF EXISTS "categories_update_admin" ON categories;
+CREATE POLICY "categories_update_admin" ON categories FOR UPDATE TO authenticated
+  USING (check_is_restaurant_admin(restaurant_id));
+DROP POLICY IF EXISTS "categories_delete_admin" ON categories;
+CREATE POLICY "categories_delete_admin" ON categories FOR DELETE TO authenticated
+  USING (check_is_restaurant_admin(restaurant_id));
 
 -- menu_items
 CREATE TABLE IF NOT EXISTS menu_items (
@@ -166,30 +182,24 @@ CREATE TABLE IF NOT EXISTS menu_items (
 CREATE INDEX IF NOT EXISTS idx_menu_items_category ON menu_items(category_id);
 ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-  CREATE POLICY "menu_items_select" ON menu_items FOR SELECT TO authenticated
-    USING (
-      (is_active = true AND category_id IN (SELECT id FROM categories WHERE restaurant_id IN (SELECT id FROM restaurants WHERE is_active = true)))
-      OR category_id IN (SELECT id FROM categories WHERE restaurant_id IN (SELECT id FROM restaurants WHERE owner_id = auth.uid()))
-      OR category_id IN (SELECT id FROM categories WHERE restaurant_id IN (SELECT restaurant_id FROM restaurant_staff WHERE user_id = auth.uid()))
-    );
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "menu_items_insert_admin" ON menu_items FOR INSERT TO authenticated
-    WITH CHECK (category_id IN (SELECT c.id FROM categories c JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()) OR category_id IN (SELECT c.id FROM categories c JOIN restaurant_staff rs ON rs.restaurant_id = c.restaurant_id WHERE rs.user_id = auth.uid() AND rs.role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "menu_items_update_admin" ON menu_items FOR UPDATE TO authenticated
-    USING (category_id IN (SELECT c.id FROM categories c JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()) OR category_id IN (SELECT c.id FROM categories c JOIN restaurant_staff rs ON rs.restaurant_id = c.restaurant_id WHERE rs.user_id = auth.uid() AND rs.role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "menu_items_delete_admin" ON menu_items FOR DELETE TO authenticated
-    USING (category_id IN (SELECT c.id FROM categories c JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()) OR category_id IN (SELECT c.id FROM categories c JOIN restaurant_staff rs ON rs.restaurant_id = c.restaurant_id WHERE rs.user_id = auth.uid() AND rs.role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+DROP POLICY IF EXISTS "menu_items_select" ON menu_items;
+CREATE POLICY "menu_items_select" ON menu_items FOR SELECT TO authenticated
+  USING (
+    (is_active = true AND category_id IN (SELECT id FROM categories WHERE restaurant_id IN (SELECT id FROM restaurants WHERE is_active = true)))
+    OR 
+    category_id IN (SELECT id FROM categories WHERE check_is_restaurant_owner(restaurant_id))
+    OR 
+    category_id IN (SELECT id FROM categories WHERE check_is_restaurant_staff(restaurant_id))
+  );
+DROP POLICY IF EXISTS "menu_items_insert_admin" ON menu_items;
+CREATE POLICY "menu_items_insert_admin" ON menu_items FOR INSERT TO authenticated
+  WITH CHECK (category_id IN (SELECT id FROM categories WHERE check_is_restaurant_admin(restaurant_id)));
+DROP POLICY IF EXISTS "menu_items_update_admin" ON menu_items;
+CREATE POLICY "menu_items_update_admin" ON menu_items FOR UPDATE TO authenticated
+  USING (category_id IN (SELECT id FROM categories WHERE check_is_restaurant_admin(restaurant_id)));
+DROP POLICY IF EXISTS "menu_items_delete_admin" ON menu_items;
+CREATE POLICY "menu_items_delete_admin" ON menu_items FOR DELETE TO authenticated
+  USING (category_id IN (SELECT id FROM categories WHERE check_is_restaurant_admin(restaurant_id)));
 
 -- modifiers
 CREATE TABLE IF NOT EXISTS modifiers (
@@ -202,25 +212,17 @@ CREATE TABLE IF NOT EXISTS modifiers (
 CREATE INDEX IF NOT EXISTS idx_modifiers_item ON modifiers(menu_item_id);
 ALTER TABLE modifiers ENABLE ROW LEVEL SECURITY;
 
-DO $$ BEGIN
-  CREATE POLICY "modifiers_select" ON modifiers FOR SELECT TO authenticated USING (true);
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "modifiers_insert_admin" ON modifiers FOR INSERT TO authenticated
-    WITH CHECK (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()) OR menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id JOIN restaurant_staff rs ON rs.restaurant_id = c.restaurant_id WHERE rs.user_id = auth.uid() AND rs.role = 'admin'));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "modifiers_update_admin" ON modifiers FOR UPDATE TO authenticated
-    USING (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
-DO $$ BEGIN
-  CREATE POLICY "modifiers_delete_admin" ON modifiers FOR DELETE TO authenticated
-    USING (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id JOIN restaurants r ON r.id = c.restaurant_id WHERE r.owner_id = auth.uid()));
-EXCEPTION WHEN duplicate_object THEN null;
-END $$;
+DROP POLICY IF EXISTS "modifiers_select" ON modifiers;
+CREATE POLICY "modifiers_select" ON modifiers FOR SELECT TO authenticated USING (true);
+DROP POLICY IF EXISTS "modifiers_insert_admin" ON modifiers;
+CREATE POLICY "modifiers_insert_admin" ON modifiers FOR INSERT TO authenticated
+  WITH CHECK (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id WHERE check_is_restaurant_admin(c.restaurant_id)));
+DROP POLICY IF EXISTS "modifiers_update_admin" ON modifiers;
+CREATE POLICY "modifiers_update_admin" ON modifiers FOR UPDATE TO authenticated
+  USING (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id WHERE check_is_restaurant_admin(c.restaurant_id)));
+DROP POLICY IF EXISTS "modifiers_delete_admin" ON modifiers;
+CREATE POLICY "modifiers_delete_admin" ON modifiers FOR DELETE TO authenticated
+  USING (menu_item_id IN (SELECT mi.id FROM menu_items mi JOIN categories c ON c.id = mi.category_id WHERE check_is_restaurant_admin(c.restaurant_id)));
 
 -- ===========================================
 -- 3. SEED: Dados mockados
@@ -244,8 +246,9 @@ BEGIN
     RAISE EXCEPTION 'Nenhum usuário cadastrado. Crie uma conta primeiro.';
   END IF;
 
-  -- Promover para admin
+  -- Promover para admin e limpar dados existentes
   UPDATE profiles SET role = 'admin' WHERE id = v_user_id;
+  DELETE FROM restaurants WHERE owner_id = v_user_id;
 
   -- Criar restaurante
   INSERT INTO restaurants (id, owner_id, name, description, is_active)
