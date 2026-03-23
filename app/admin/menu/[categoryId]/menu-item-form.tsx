@@ -47,13 +47,13 @@ export function MenuItemForm({ categoryId, item }: { categoryId: string, item?: 
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-white p-6 border rounded shadow-sm">
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 bg-card p-6 border rounded shadow-sm">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Nome do Item</Label>
             <Input {...form.register('name')} />
-            {form.formState.errors.name && <p className="text-red-500 text-sm">{form.formState.errors.name.message}</p>}
+            {form.formState.errors.name && <p className="text-negative-2 text-sm">{form.formState.errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -64,7 +64,7 @@ export function MenuItemForm({ categoryId, item }: { categoryId: string, item?: 
           <div className="space-y-2">
             <Label>Preço (R$)</Label>
             <Input type="number" step="0.01" {...form.register('price')} />
-            {form.formState.errors.price && <p className="text-red-500 text-sm">{form.formState.errors.price.message}</p>}
+            {form.formState.errors.price && <p className="text-negative-2 text-sm">{form.formState.errors.price.message}</p>}
           </div>
 
           <div className="flex items-center gap-2">

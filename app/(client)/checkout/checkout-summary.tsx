@@ -14,7 +14,7 @@ type CheckoutSummaryProps = {
 
 export function CheckoutSummary({ items, subtotal, serviceFee, total }: CheckoutSummaryProps) {
   return (
-    <div className="bg-white border rounded-lg p-4">
+    <div className="bg-card border rounded-lg p-4">
       <h2 className="font-semibold text-lg mb-4">Resumo do Pedido</h2>
 
       <ul className="space-y-3">
@@ -27,14 +27,14 @@ export function CheckoutSummary({ items, subtotal, serviceFee, total }: Checkout
               <div>
                 <span className="font-medium">{item.quantity}x {item.name}</span>
                 {item.modifiers.length > 0 && (
-                  <ul className="text-xs text-gray-500 ml-4">
+                  <ul className="text-xs text-muted-foreground ml-4">
                     {item.modifiers.map((m) => (
                       <li key={m.id}>+ {m.name} ({formatCurrency(m.additional_price)})</li>
                     ))}
                   </ul>
                 )}
               </div>
-              <span className="text-gray-700 whitespace-nowrap">{formatCurrency(itemTotal)}</span>
+              <span className="text-foreground whitespace-nowrap">{formatCurrency(itemTotal)}</span>
             </li>
           )
         })}
@@ -42,11 +42,11 @@ export function CheckoutSummary({ items, subtotal, serviceFee, total }: Checkout
 
       <div className="border-t mt-4 pt-4 space-y-2 text-sm">
         <div className="flex justify-between">
-          <span className="text-gray-600">Subtotal</span>
+          <span className="text-muted-foreground">Subtotal</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
         <div className="flex justify-between">
-          <span className="text-gray-600">Taxa de serviço (10%)</span>
+          <span className="text-muted-foreground">Taxa de serviço (10%)</span>
           <span>{formatCurrency(serviceFee)}</span>
         </div>
         <div className="flex justify-between text-lg font-bold border-t pt-2 mt-2">

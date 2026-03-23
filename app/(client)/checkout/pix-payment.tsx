@@ -87,7 +87,7 @@ export function PixPayment({ clientSecret, onPaid, onError }: PixPaymentProps) {
   if (expired) {
     return (
       <div className="flex flex-col items-center py-8 space-y-4">
-        <p className="text-red-600 font-medium">QR Code expirado.</p>
+        <p className="text-negative-2 font-medium">QR Code expirado.</p>
         <Button onClick={handleSubmit}>Gerar novo QR Code</Button>
       </div>
     )
@@ -97,12 +97,12 @@ export function PixPayment({ clientSecret, onPaid, onError }: PixPaymentProps) {
     return (
       <div className="flex flex-col items-center space-y-4 py-4">
         <h2 className="font-semibold text-lg">Pague com Pix</h2>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Expira em <span className="font-mono font-medium">{formatTime(timeLeft)}</span>
         </p>
         <div className="animate-pulse flex flex-col items-center">
-          <div className="w-10 h-10 border-b-2 border-blue-600 rounded-full animate-spin" />
-          <p className="mt-4 text-sm text-gray-500">Aguardando confirmação do pagamento...</p>
+          <div className="w-10 h-10 border-b-2 border-primary rounded-full animate-spin" />
+          <p className="mt-4 text-sm text-muted-foreground">Aguardando confirmação do pagamento...</p>
         </div>
       </div>
     )

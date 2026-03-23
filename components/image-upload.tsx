@@ -67,8 +67,8 @@ export function ImageUpload({ currentUrl, onUpload }: { currentUrl?: string, onU
           </Button>
         </div>
       ) : (
-        <div className="w-32 h-32 bg-gray-100 flex items-center justify-center rounded border border-dashed border-gray-300">
-          <span className="text-gray-400 text-xs text-center px-2">Sem foto</span>
+        <div className="w-32 h-32 bg-neutral-10 flex items-center justify-center rounded border border-dashed border-border">
+          <span className="text-neutral-50 text-xs text-center px-2">Sem foto</span>
         </div>
       )}
       <div>

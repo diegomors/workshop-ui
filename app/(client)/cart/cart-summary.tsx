@@ -10,8 +10,8 @@ export function CartSummary() {
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-white border rounded">
-        <p className="text-gray-500 mb-6 text-lg">Seu carrinho está vazio.</p>
+      <div className="flex flex-col items-center justify-center p-8 bg-card border rounded">
+        <p className="text-muted-foreground mb-6 text-lg">Seu carrinho está vazio.</p>
         {restaurantId ? (
           <Link href={`/restaurant/${restaurantId}`}>
             <Button>Voltar ao Cardápio</Button>
@@ -43,23 +43,23 @@ export function CartSummary() {
           const subtotal = unitPrice * item.quantity
 
           return (
-            <div key={item.id} className="flex flex-col sm:flex-row justify-between p-4 bg-white border rounded shadow-sm gap-4">
+            <div key={item.id} className="flex flex-col sm:flex-row justify-between p-4 bg-card border rounded shadow-sm gap-4">
               <div className="flex gap-4">
                 {item.image_url ? (
                   <img src={item.image_url} alt={item.name} className="w-16 h-16 object-cover rounded" />
                 ) : (
-                  <div className="w-16 h-16 bg-gray-100 rounded" />
+                  <div className="w-16 h-16 bg-neutral-10 rounded" />
                 )}
                 <div>
                   <h3 className="font-semibold text-lg">{item.name}</h3>
                   {item.modifiers.length > 0 && (
-                    <ul className="text-sm text-gray-500 mt-1">
+                    <ul className="text-sm text-muted-foreground mt-1">
                       {item.modifiers.map(m => (
                         <li key={m.id}>+ {m.name} ({new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(m.additional_price)})</li>
                       ))}
                     </ul>
                   )}
-                  <p className="font-semibold text-blue-600 mt-2">
+                  <p className="font-semibold text-primary mt-2">
                     {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(subtotal)}
                   </p>
                 </div>
@@ -67,11 +67,11 @@ export function CartSummary() {
 
               <div className="flex items-center justify-between sm:flex-col sm:items-end sm:justify-center">
                 <div className="flex items-center border rounded-md mb-2">
-                  <button className="px-3 py-1 hover:bg-gray-100 font-bold" onClick={() => handleUpdateQty(item.id, item.quantity - 1)}>-</button>
+                  <button className="px-3 py-1 hover:bg-accent font-bold" onClick={() => handleUpdateQty(item.id, item.quantity - 1)}>-</button>
                   <span className="px-3 text-sm">{item.quantity}</span>
-                  <button className="px-3 py-1 hover:bg-gray-100 font-bold" onClick={() => handleUpdateQty(item.id, item.quantity + 1)}>+</button>
+                  <button className="px-3 py-1 hover:bg-accent font-bold" onClick={() => handleUpdateQty(item.id, item.quantity + 1)}>+</button>
                 </div>
-                <button className="text-red-500 text-sm hover:underline" onClick={() => handleRemove(item.id)}>Remover</button>
+                <button className="text-negative-2 text-sm hover:underline" onClick={() => handleRemove(item.id)}>Remover</button>
               </div>
             </div>
           )
@@ -90,7 +90,7 @@ export function CartSummary() {
               Continuar para Pagamento
             </Button>
           </Link>
-          <Link href={`/restaurant/${restaurantId}`} className="text-center text-blue-600 hover:underline">
+          <Link href={`/restaurant/${restaurantId}`} className="text-center text-primary hover:underline">
             Adicionar mais itens
           </Link>
         </div>

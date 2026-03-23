@@ -21,7 +21,7 @@ export default function ClientLayout({
         <Header />
         <div className="flex flex-col md:flex-row flex-1 overflow-hidden">
           <BottomNav role="cliente" items={navItems} />
-          <main id="main-content" className="flex-1 relative bg-gray-50 overflow-hidden">
+          <main id="main-content" className="flex-1 relative bg-neutral-10 overflow-hidden">
             {children}
             <div className="fixed bottom-24 right-4 z-50">
               <CartButton />
