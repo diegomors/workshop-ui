@@ -1,1 +1,135 @@
-{}
+{
+  "Index": {
+    "title": ""
+  },
+  "Auth": {
+    "login": "",
+    "email": "",
+    "password": "",
+    "signup": "",
+    "reset": "",
+    "submit": "",
+    "name": "",
+    "phone": "",
+    "invalidEmail": "",
+    "weakPassword": "",
+    "required": ""
+  },
+  "Menu": {
+    "categories": "",
+    "items": "",
+    "addCategory": "",
+    "addItem": "",
+    "editItem": "",
+    "categoryName": "",
+    "itemName": "",
+    "description": "",
+    "price": "",
+    "modifiers": "",
+    "active": "",
+    "inactive": "",
+    "image": "",
+    "uploadImage": "",
+    "noCategories": "",
+    "noItems": "",
+    "save": "",
+    "cancel": "",
+    "delete": "",
+    "confirmDelete": ""
+  },
+  "Cart": {
+    "title": "",
+    "empty": "",
+    "subtotal": "",
+    "serviceFee": "",
+    "total": "",
+    "checkout": "",
+    "removeItem": "",
+    "quantity": "",
+    "clearCart": ""
+  },
+  "Orders": {
+    "title": "",
+    "myOrders": "",
+    "noOrders": "",
+    "orderNumber": "",
+    "status": "",
+    "total": "",
+    "date": "",
+    "details": "",
+    "cancel": "",
+    "confirmCancel": "",
+    "statusRealizado": "",
+    "statusConfirmado": "",
+    "statusEmPreparo": "",
+    "statusProntoRetirada": "",
+    "statusEmRota": "",
+    "statusEntregue": "",
+    "statusCancelado": "",
+    "statusRetiradoCliente": ""
+  },
+  "Delivery": {
+    "title": "",
+    "noDeliveries": "",
+    "startDelivery": "",
+    "confirmDelivery": "",
+    "deliveryCode": "",
+    "enterCode": "",
+    "invalidCode": "",
+    "attemptsRemaining": "",
+    "locked": "",
+    "chat": "",
+    "tracking": ""
+  },
+  "Reports": {
+    "title": "",
+    "period": "",
+    "prepTime": "",
+    "deliveryPerformance": "",
+    "itemName": "",
+    "totalOrders": "",
+    "avgTime": "",
+    "delivererName": "",
+    "totalDeliveries": "",
+    "noOrdersData": "",
+    "noDeliveriesData": ""
+  },
+  "Common": {
+    "loading": "",
+    "error": "",
+    "tryAgain": "",
+    "back": "",
+    "save": "",
+    "cancel": "",
+    "delete": "",
+    "confirm": "",
+    "close": "",
+    "search": "",
+    "noResults": "",
+    "currency": ""
+  },
+  "Map": {
+    "title": "",
+    "searchPlaceholder": "",
+    "gpsDisabled": "",
+    "enableLocation": "",
+    "noRestaurants": ""
+  },
+  "Payment": {
+    "title": "",
+    "card": "",
+    "pix": "",
+    "processing": "",
+    "success": "",
+    "failed": "",
+    "retry": ""
+  },
+  "Admin": {
+    "dashboard": "",
+    "menu": "",
+    "orders": "",
+    "reports": "",
+    "settings": "",
+    "welcome": ""
+  }
+}
