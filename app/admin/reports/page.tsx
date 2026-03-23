@@ -23,7 +23,7 @@ export default async function ReportsPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Relatórios</h1>
-        <span className="rounded-full bg-gray-200 px-3 py-1 text-sm text-gray-600">
+        <span className="rounded-full bg-neutral-20 px-3 py-1 text-sm text-muted-foreground">
           Últimos 7 dias
         </span>
       </div>
@@ -48,25 +48,25 @@ export default async function ReportsPage() {
 function PrepTimeTable({ data }: { data: PrepTimeRow[] }) {
   if (data.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+      <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
         Nenhum pedido nos últimos 7 dias
       </p>
     )
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200">
+    <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-left text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-neutral-10">
           <tr>
-            <th className="px-4 py-3 font-medium text-gray-700">Item do Cardápio</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700">Qtd Pedidos</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700">Tempo Médio (min)</th>
+            <th className="px-4 py-3 font-medium text-foreground">Item do Cardápio</th>
+            <th className="px-4 py-3 text-right font-medium text-foreground">Qtd Pedidos</th>
+            <th className="px-4 py-3 text-right font-medium text-foreground">Tempo Médio (min)</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
+        <tbody className="divide-y divide-border">
           {data.map((row) => (
-            <tr key={row.itemName} className="hover:bg-gray-50">
+            <tr key={row.itemName} className="hover:bg-accent">
               <td className="px-4 py-3">{row.itemName}</td>
               <td className="px-4 py-3 text-right tabular-nums">{row.totalOrders}</td>
               <td className="px-4 py-3 text-right tabular-nums">{row.avgPrepTimeMin.toFixed(1)} min</td>
@@ -81,25 +81,25 @@ function PrepTimeTable({ data }: { data: PrepTimeRow[] }) {
 function DeliveryPerformanceTable({ data }: { data: DeliveryPerformanceRow[] }) {
   if (data.length === 0) {
     return (
-      <p className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-500">
+      <p className="rounded-lg border border-dashed border-border p-8 text-center text-muted-foreground">
         Nenhuma entrega nos últimos 7 dias
       </p>
     )
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200">
+    <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full text-left text-sm">
-        <thead className="bg-gray-50">
+        <thead className="bg-neutral-10">
           <tr>
-            <th className="px-4 py-3 font-medium text-gray-700">Entregador</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700">Total Entregas</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-700">Tempo Médio (min)</th>
+            <th className="px-4 py-3 font-medium text-foreground">Entregador</th>
+            <th className="px-4 py-3 text-right font-medium text-foreground">Total Entregas</th>
+            <th className="px-4 py-3 text-right font-medium text-foreground">Tempo Médio (min)</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-200">
+        <tbody className="divide-y divide-border">
           {data.map((row) => (
-            <tr key={row.delivererName} className="hover:bg-gray-50">
+            <tr key={row.delivererName} className="hover:bg-accent">
               <td className="px-4 py-3">{row.delivererName}</td>
               <td className="px-4 py-3 text-right tabular-nums">{row.totalDeliveries}</td>
               <td className="px-4 py-3 text-right tabular-nums">{row.avgDeliveryTimeMin.toFixed(1)} min</td>

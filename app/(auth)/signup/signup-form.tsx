@@ -37,7 +37,7 @@ export function SignUpForm() {
         <Label htmlFor="name">{t('name')}</Label>
         <Input id="name" {...form.register('name')} aria-describedby="name-error" />
         {form.formState.errors.name && (
-          <p id="name-error" className="text-sm text-red-500">{t('required')}</p>
+          <p id="name-error" className="text-sm text-negative-2">{t('required')}</p>
         )}
       </div>
 
@@ -45,7 +45,7 @@ export function SignUpForm() {
         <Label htmlFor="email">{t('email')}</Label>
         <Input id="email" type="email" {...form.register('email')} aria-describedby="email-error" />
         {form.formState.errors.email && (
-          <p id="email-error" className="text-sm text-red-500">{t('invalidEmail')}</p>
+          <p id="email-error" className="text-sm text-negative-2">{t('invalidEmail')}</p>
         )}
       </div>
 
@@ -58,7 +58,7 @@ export function SignUpForm() {
         <Label htmlFor="password">{t('password')}</Label>
         <Input id="password" type="password" {...form.register('password')} aria-describedby="pwd-error" />
         {form.formState.errors.password && (
-          <p id="pwd-error" className="text-sm text-red-500">{t('weakPassword')}</p>
+          <p id="pwd-error" className="text-sm text-negative-2">{t('weakPassword')}</p>
         )}
       </div>
       
@@ -67,7 +67,7 @@ export function SignUpForm() {
       </Button>
       
       <div className="text-center text-sm mt-4">
-        <Link href="/login" className="text-blue-500 hover:underline">{t('login')}</Link>
+        <Link href="/login" className="text-primary hover:underline">{t('login')}</Link>
       </div>
     </form>
   )

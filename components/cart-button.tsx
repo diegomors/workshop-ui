@@ -10,9 +10,9 @@ export function CartButton() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <Link href="/cart" className="flex items-center justify-center p-4 bg-blue-600 text-white rounded-full shadow-lg relative hover:bg-blue-700 transition">
+      <Link href="/cart" className="flex items-center justify-center p-4 bg-primary text-primary-foreground rounded-full shadow-lg relative hover:bg-primary/90 active:bg-primary/80 transition-colors">
         <span>🛒</span>
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+        <span className="absolute -top-2 -right-2 bg-negative-2 text-neutral-0 text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
           {totalCount}
         </span>
       </Link>

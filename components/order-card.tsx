@@ -34,7 +34,7 @@ export function OrderCard({ order, actions }: OrderCardProps) {
         </div>
         
         {order.notes && (
-          <div className="text-sm border-l-2 border-yellow-200 pl-2 italic text-muted-foreground">
+          <div className="text-sm border-l-2 border-warning-2/30 pl-2 italic text-muted-foreground">
             "{order.notes}"
           </div>
         )}

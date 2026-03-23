@@ -60,8 +60,8 @@ export function ItemDetailModal({
         )}
         
         <h2 className="text-2xl font-bold">{item.name}</h2>
-        {item.description && <p className="text-gray-500 mt-2">{item.description}</p>}
-        <p className="font-bold text-lg text-blue-600 mt-2">
+        {item.description && <p className="text-muted-foreground mt-2">{item.description}</p>}
+        <p className="font-bold text-lg text-primary mt-2">
           {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
         </p>
 
@@ -70,18 +70,18 @@ export function ItemDetailModal({
             <h3 className="font-semibold mb-3">Extras (Opcional)</h3>
             <div className="space-y-3">
               {item.modifiers.map(mod => (
-                <label key={mod.id} className="flex items-center justify-between cursor-pointer bg-gray-50 p-3 rounded border hover:bg-gray-100">
+                <label key={mod.id} className="flex items-center justify-between cursor-pointer bg-neutral-10 p-3 rounded border hover:bg-accent">
                   <div className="flex items-center gap-3">
                     <input 
                       type="checkbox" 
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-primary"
                       checked={selectedMods.some(m => m.id === mod.id)}
                       onChange={(e) => handleModToggle(mod, e.target.checked)}
                     />
                     <span>{mod.name}</span>
                   </div>
                   {mod.additional_price > 0 && (
-                    <span className="text-gray-600">+ {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(mod.additional_price)}</span>
+                    <span className="text-muted-foreground">+ {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(mod.additional_price)}</span>
                   )}
                 </label>
               ))}
@@ -92,14 +92,14 @@ export function ItemDetailModal({
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center border rounded-md">
             <button 
-              className="px-4 py-2 hover:bg-gray-100"
+              className="px-4 py-2 hover:bg-accent"
               onClick={() => setQuantity(q => Math.max(1, q - 1))}
             >
               -
             </button>
             <span className="px-4 font-semibold">{quantity}</span>
             <button 
-              className="px-4 py-2 hover:bg-gray-100"
+              className="px-4 py-2 hover:bg-accent"
               onClick={() => setQuantity(q => Math.min(99, q + 1))}
             >
               +

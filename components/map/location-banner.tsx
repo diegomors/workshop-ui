@@ -9,10 +9,10 @@ interface LocationBannerProps {
 
 export function LocationBanner({ onRequestPermission }: LocationBannerProps) {
   return (
-    <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-white rounded-xl shadow-xl border border-blue-100 p-4 flex flex-col gap-3 max-w-sm mx-auto sm:right-auto sm:left-4">
+    <div className="absolute bottom-4 left-4 right-4 z-[1000] bg-card rounded-xl shadow-xl border border-border p-4 flex flex-col gap-3 max-w-sm mx-auto sm:right-auto sm:left-4">
       <div className="flex items-start gap-3">
-        <div className="bg-blue-50 p-2 rounded-lg shrink-0">
-          <MapPin className="w-5 h-5 text-blue-500" />
+        <div className="bg-primary/5 p-2 rounded-lg shrink-0">
+          <MapPin className="w-5 h-5 text-primary" />
         </div>
         <div>
           <h4 className="font-bold text-slate-900 leading-tight">Melhore sua experiência</h4>
@@ -23,7 +23,7 @@ export function LocationBanner({ onRequestPermission }: LocationBannerProps) {
         onClick={onRequestPermission} 
         size="sm" 
         variant="default" 
-        className="w-full font-semibold bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all"
+        className="w-full font-semibold bg-primary hover:bg-primary/90 active:scale-95 transition-all"
       >
         Ativar Localização
       </Button>

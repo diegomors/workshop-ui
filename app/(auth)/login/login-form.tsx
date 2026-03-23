@@ -33,7 +33,7 @@ export function LoginForm() {
         <Label htmlFor="email">{t('email')}</Label>
         <Input id="email" type="email" {...form.register('email')} aria-describedby="email-error" />
         {form.formState.errors.email && (
-          <p id="email-error" className="text-sm text-red-500">{t('invalidEmail')}</p>
+          <p id="email-error" className="text-sm text-negative-2">{t('invalidEmail')}</p>
         )}
       </div>
       
@@ -41,7 +41,7 @@ export function LoginForm() {
         <Label htmlFor="password">{t('password')}</Label>
         <Input id="password" type="password" {...form.register('password')} aria-describedby="password-error" />
         {form.formState.errors.password && (
-          <p id="password-error" className="text-sm text-red-500">{t('required')}</p>
+          <p id="password-error" className="text-sm text-negative-2">{t('required')}</p>
         )}
       </div>
       
@@ -50,8 +50,8 @@ export function LoginForm() {
       </Button>
       
       <div className="flex justify-between text-sm mt-4">
-        <Link href="/reset-password" className="text-blue-500 hover:underline">{t('reset')}</Link>
-        <Link href="/signup" className="text-blue-500 hover:underline">{t('signup')}</Link>
+        <Link href="/reset-password" className="text-primary hover:underline">{t('reset')}</Link>
+        <Link href="/signup" className="text-primary hover:underline">{t('signup')}</Link>
       </div>
     </form>
   )
