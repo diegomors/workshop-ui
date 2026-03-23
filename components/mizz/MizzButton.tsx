@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef, useCallback, type ButtonHTMLAttributes, type MouseEvent, type ReactNode } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
