@@ -1,5 +1,5 @@
 -- ===========================================
--- SEED COMPLETO DO MIZZ
+-- SEED COMPLETO DO MIZZ RESETÁVEL
 -- Execute este script no Supabase SQL Editor
 -- ===========================================
 
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS orders (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- 3. SEED LOGIC
+-- 3. RESETAR DADOS DO SEED PARA RECRIAR TUDO
 DO $$
 DECLARE
   v_user_id UUID;
@@ -123,7 +123,7 @@ DECLARE
   v_cat_id UUID;
   v_item_id UUID;
 BEGIN
-  -- 1. Selecionar o primeiro usuário para ser o Admin
+  -- Selecionar o primeiro usuário do auth.users para ser o Admin do seed
   SELECT id INTO v_user_id FROM auth.users LIMIT 1;
 
   IF v_user_id IS NULL THEN
@@ -131,32 +131,52 @@ BEGIN
     RETURN;
   END IF;
 
-  -- 2. Garantir perfil do Admin
+  -- Limpar TUDO relacionado ao seed anterior do usuário admin selecionado
+  -- Remover primeiro entidades dependentes na ordem correta para evitar violação de FK
+  -- Limpar Pedidos de TODOS restaurantes do usuário
+  DELETE FROM public.orders WHERE restaurant_id IN (SELECT id FROM public.restaurants WHERE owner_id = v_user_id);
+  -- Modifiers e Menu Items de TODOS restaurantes deste dono
+  DELETE FROM public.modifiers WHERE menu_item_id IN (
+    SELECT mi.id FROM public.menu_items mi
+    JOIN public.categories c ON mi.category_id = c.id
+    JOIN public.restaurants r ON c.restaurant_id = r.id
+    WHERE r.owner_id = v_user_id
+  );
+  DELETE FROM public.menu_items WHERE category_id IN (
+    SELECT c.id FROM public.categories c
+    JOIN public.restaurants r ON c.restaurant_id = r.id
+    WHERE r.owner_id = v_user_id
+  );
+  DELETE FROM public.categories WHERE restaurant_id IN (SELECT id FROM public.restaurants WHERE owner_id = v_user_id);
+  DELETE FROM public.restaurant_staff WHERE restaurant_id IN (SELECT id FROM public.restaurants WHERE owner_id = v_user_id);
+  DELETE FROM public.restaurants WHERE owner_id = v_user_id;
+
+  -- (Opcional): Limpar perfil exceto para este user
+  -- (Opcional): Manter apenas admin, mas neste caso não deleta para não prejudicar outros fluxos
+
+  -- Reinserir perfil admin caso necessário
   INSERT INTO public.profiles (id, role, name)
   VALUES (v_user_id, 'admin', 'Mestre Restauranteur')
   ON CONFLICT (id) DO UPDATE SET role = 'admin';
 
-  -- 3. Limpar dados anteriores para o seed ser idempotente
-  DELETE FROM public.restaurants WHERE owner_id = v_user_id;
+  -- CRIAÇÃO DOS NOVOS DADOS INICIAIS
 
-  -- 4. Criar Restaurantes em localizações estratégicas de SP (Praça da Sé)
-  
-  -- Restaurante 1: O principal (Sabor & Arte)
+  -- Restaurante 1: Sabor & Arte (Praça da Sé)
   INSERT INTO public.restaurants (owner_id, name, description, latitude, longitude, coverage_radius_km)
   VALUES (v_user_id, 'Restaurante Sabor & Arte', 'O melhor da culinária artesanal no centro de SP', -23.5505, -46.6333, 5.0)
   RETURNING id INTO v_res_id_1;
 
-  -- Restaurante 2: Hamburgueria (Próximo à Liberdade)
+  -- Restaurante 2: Burger Freedom (Liberdade)
   INSERT INTO public.restaurants (owner_id, name, description, latitude, longitude, coverage_radius_km)
   VALUES (v_user_id, 'Burger Freedom', 'Hambúrgueres com alma oriental e rústica', -23.558, -46.638, 3.0)
   RETURNING id INTO v_res_id_2;
 
-  -- Restaurante 3: Sushi Bar (Próximo à República)
+  -- Restaurante 3: Sushi Republic (República)
   INSERT INTO public.restaurants (owner_id, name, description, latitude, longitude, coverage_radius_km)
   VALUES (v_user_id, 'Sushi Republic', 'Peixe fresco e técnicas milenares', -23.542, -46.636, 4.0)
   RETURNING id INTO v_res_id_3;
 
-  -- 5. Criar Categorias e Itens para o Restaurante 1
+  -- Criar Categorias e Itens para Restaurante 1
   INSERT INTO public.categories (restaurant_id, name, sort_order)
   VALUES (v_res_id_1, 'Lanches', 0)
   RETURNING id INTO v_cat_id;
@@ -175,20 +195,17 @@ BEGIN
   INSERT INTO public.menu_items (category_id, name, description, price, sort_order)
   VALUES (v_cat_id, 'Suco de Laranja', 'Natural da fruta 400ml', 12.00, 0);
 
-  -- 6. Criar Pedidos para visualização do Mapa (PRD-04)
-  -- Pedido 1: Em Rota (Cliente a ~700m do Restaurante 1)
+  -- Criar Pedidos para visualização do mapa (dev/teste)
   INSERT INTO public.orders (restaurant_id, customer_id, status, total, service_fee, delivery_code, customer_latitude, customer_longitude)
   VALUES (v_res_id_1, v_user_id, 'EM_ROTA', 45.40, 4.50, '1234', -23.555, -46.635);
 
-  -- Pedido 2: Realizado (Mais longe, mas dentro da cobertura)
   INSERT INTO public.orders (restaurant_id, customer_id, status, total, service_fee, delivery_code, customer_latitude, customer_longitude)
   VALUES (v_res_id_1, v_user_id, 'REALIZADO', 32.00, 3.20, '4321', -23.545, -46.625);
 
-  -- Pedido 3: Entregue (Visualização de histórico)
   INSERT INTO public.orders (restaurant_id, customer_id, status, total, service_fee, delivery_code, customer_latitude, customer_longitude)
   VALUES (v_res_id_1, v_user_id, 'ENTREGUE', 105.00, 10.50, '5678', -23.552, -46.628);
 
-  RAISE NOTICE 'Seed finalizado com sucesso!';
-  RAISE NOTICE 'Restaurantes criados: 3';
+  RAISE NOTICE 'Seed RESETADO com sucesso!';
+  RAISE NOTICE 'Restaurantes recriados: 3';
   RAISE NOTICE 'Pedidos ativos para teste de mapa: 2';
 END $$;
