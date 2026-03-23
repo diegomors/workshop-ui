@@ -1,12 +1,12 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import clsx from 'clsx'
+import { usePathname, useRouter } from 'next/navigation'
+import { MizzBottomNavigation, type MizzBottomNavItem } from '@/components/mizz/MizzBottomNavigation'
 
 type NavItem = {
   href: string
   label: string
+  icon?: React.ReactNode
 }
 
 type BottomNavProps = {
@@ -14,28 +14,37 @@ type BottomNavProps = {
   items: NavItem[]
 }
 
+/** Default icon for nav items that don't provide one */
+function DefaultIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="10" cy="10" r="7" />
+    </svg>
+  )
+}
+
 export function BottomNav({ items }: BottomNavProps) {
   const pathname = usePathname()
+  const router = useRouter()
 
   if (items.length === 0) return null
 
+  const mizzItems: MizzBottomNavItem[] = items.map((item) => ({
+    value: item.href,
+    label: item.label,
+    icon: item.icon ?? <DefaultIcon />,
+  }))
+
+  const activeValue = items.find((item) => pathname === item.href)?.href ?? items[0].href
+
   return (
-    <nav className="fixed bottom-0 w-full left-0 right-0 bg-white border-t flex items-center justify-around z-50 md:relative md:w-64 md:flex-col md:border-r md:border-t-0 md:h-screen md:justify-start">
-      {items.map((item) => {
-        const isActive = pathname === item.href
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={clsx(
-              "flex-1 md:flex-none md:w-full flex flex-col md:flex-row items-center md:justify-start p-3 text-xs md:text-sm border-b-transparent md:border-b",
-              isActive ? "text-blue-600 font-bold bg-blue-50" : "text-gray-500 hover:bg-gray-50"
-            )}
-          >
-            <span className="md:ml-2">{item.label}</span>
-          </Link>
-        )
-      })}
-    </nav>
+    <div className="fixed bottom-0 left-0 right-0 z-50 md:relative md:w-64 md:shrink-0">
+      <MizzBottomNavigation
+        items={mizzItems}
+        value={activeValue}
+        onChange={(value) => router.push(value)}
+        className="md:flex-col md:h-full md:border-t-0 md:border-r md:border-border"
+      />
+    </div>
   )
 }

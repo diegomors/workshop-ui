@@ -98,7 +98,7 @@ export function DeliveryCodeModal({ orderId, isOpen, onClose, onSuccess }: Deliv
         {success ? (
           <div className="flex flex-col items-center gap-4 py-6">
             <CheckCircle2 className="size-16 text-green-500" />
-            <p className="text-lg font-medium text-green-700">Entrega realizada com sucesso!</p>
+            <p className="text-lg font-medium text-positive-2">Entrega realizada com sucesso!</p>
           </div>
         ) : (
           <div className="space-y-6 py-4">

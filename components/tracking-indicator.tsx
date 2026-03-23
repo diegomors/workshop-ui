@@ -16,10 +16,10 @@ export function TrackingIndicator({ isActive, className }: TrackingIndicatorProp
       <span
         className={cn(
           'size-2.5 rounded-full',
-          isActive ? 'bg-green-500 animate-pulse' : 'bg-red-400'
+          isActive ? 'bg-positive-10 animate-pulse' : 'bg-red-400'
         )}
       />
-      <span className={cn(isActive ? 'text-green-700' : 'text-red-500')}>
+      <span className={cn(isActive ? 'text-positive-2' : 'text-negative-2')}>
         {isActive ? 'Rastreamento ativo' : 'GPS inativo'}
       </span>
     </div>

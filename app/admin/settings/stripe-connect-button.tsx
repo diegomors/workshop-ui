@@ -43,7 +43,7 @@ export function StripeConnectButton({ restaurantId, hasStripeAccount }: StripeCo
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <div className={`w-3 h-3 rounded-full ${status.isActive ? 'bg-green-500' : 'bg-yellow-500'}`} />
+          <div className={`w-3 h-3 rounded-full ${status.isActive ? 'bg-positive-10' : 'bg-warning-10'}`} />
           <span className="text-sm font-medium">
             {status.isActive
               ? 'Conta Stripe ativa — pronta para receber pagamentos'
@@ -65,7 +65,7 @@ export function StripeConnectButton({ restaurantId, hasStripeAccount }: StripeCo
   return (
     <div className="space-y-3">
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-negative-2">{error}</p>
       )}
       <Button onClick={handleConnect} disabled={loading}>
         {loading ? 'Redirecionando...' : 'Conectar com Stripe'}

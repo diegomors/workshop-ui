@@ -15,19 +15,19 @@ function SortableMenuItem({ item, categoryId, onDelete, onToggle }: { item: Menu
   const style = { transform: CSS.Transform.toString(transform), transition }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center justify-between p-4 bg-white border rounded shadow-sm mb-2 group">
+    <div ref={setNodeRef} style={style} className="flex items-center justify-between p-4 bg-card border rounded shadow-sm mb-2 group">
       <div className="flex items-center gap-4 flex-1">
-        <div {...attributes} {...listeners} className="cursor-grab text-gray-400 hover:text-gray-600">
+        <div {...attributes} {...listeners} className="cursor-grab text-neutral-50 hover:text-neutral-200">
           <span className="text-xl">≡</span>
         </div>
         {item.image_url ? (
           <img src={item.image_url} alt={item.name} className="w-12 h-12 object-cover rounded" />
         ) : (
-          <div className="w-12 h-12 bg-gray-200 rounded" />
+          <div className="w-12 h-12 bg-neutral-30 rounded" />
         )}
         <div>
           <div className="font-semibold">{item.name}</div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.price)}
           </div>
         </div>
@@ -101,7 +101,7 @@ export function MenuItemList({ initialItems, categoryId }: { initialItems: MenuI
             <SortableMenuItem key={item.id} item={item} categoryId={categoryId} onDelete={handleDelete} onToggle={handleToggle} />
           ))}
           {items.length === 0 && (
-            <div className="text-center p-8 bg-white border rounded text-gray-500">Nenhum item nesta categoria.</div>
+            <div className="text-center p-8 bg-card border rounded text-muted-foreground">Nenhum item nesta categoria.</div>
           )}
         </SortableContext>
       </DndContext>

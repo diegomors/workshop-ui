@@ -28,7 +28,7 @@ export default function CheckoutPage() {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 h-full">
-        <p className="text-gray-500 mb-6 text-lg">Seu carrinho está vazio.</p>
+        <p className="text-muted-foreground mb-6 text-lg">Seu carrinho está vazio.</p>
         <Link href="/">
           <Button>Ver Restaurantes</Button>
         </Link>
@@ -96,7 +96,7 @@ export default function CheckoutPage() {
 
       {/* Notes */}
       <div className="mt-6">
-        <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="notes" className="block text-sm font-medium text-neutral-500 mb-1">
           Observações (opcional)
         </label>
         <textarea
@@ -108,7 +108,7 @@ export default function CheckoutPage() {
           className="w-full border rounded-md p-2 text-sm"
           placeholder="Alguma observação sobre o pedido..."
         />
-        <p className="text-xs text-gray-400 mt-1">{notes.length}/500</p>
+        <p className="text-xs text-neutral-50 mt-1">{notes.length}/500</p>
       </div>
 
       {/* Cancellation checkbox - PRD-05 US-05.1 */}
@@ -118,16 +118,16 @@ export default function CheckoutPage() {
             type="checkbox"
             checked={agreedToCancellation}
             onChange={(e) => setAgreedToCancellation(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-gray-300"
+            className="mt-1 h-4 w-4 rounded border-border"
           />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-neutral-500">
             Entendo que após o preparo iniciar, o pedido não pode ser cancelado
           </span>
         </label>
       </div>
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+        <div className="mt-4 p-3 bg-negative-1 border border-red-200 rounded-md text-red-700 text-sm">
           {error}
         </div>
       )}

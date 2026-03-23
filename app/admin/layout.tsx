@@ -21,7 +21,7 @@ export default function AdminLayout({
       <Header />
       <div className="flex flex-col md:flex-row flex-1">
         <BottomNav role="admin" items={navItems} />
-        <main id="main-content" className="flex-1 p-4 pb-20 md:pb-4 overflow-y-auto bg-gray-50">
+        <main id="main-content" className="flex-1 p-4 pb-20 md:pb-4 overflow-y-auto bg-background">
           {children}
         </main>
       </div>

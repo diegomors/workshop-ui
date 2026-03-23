@@ -16,9 +16,9 @@ function SortableCategoryItem({ category, restaurantId, onDelete }: { category: 
   const style = { transform: CSS.Transform.toString(transform), transition }
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center justify-between p-4 bg-white border rounded shadow-sm mb-2 group">
+    <div ref={setNodeRef} style={style} className="flex items-center justify-between p-4 bg-card border rounded shadow-sm mb-2 group">
       <div className="flex items-center gap-4 flex-1">
-        <div {...attributes} {...listeners} className="cursor-grab text-gray-400 hover:text-gray-600">
+        <div {...attributes} {...listeners} className="cursor-grab text-neutral-50 hover:text-neutral-200">
           <span className="text-xl">≡</span>
         </div>
         <div className="font-semibold">{category.name}</div>
@@ -87,7 +87,7 @@ export function CategoryList({ initialCategories, restaurantId }: { initialCateg
             <SortableCategoryItem key={cat.id} category={cat} restaurantId={restaurantId} onDelete={handleDelete} />
           ))}
           {categories.length === 0 && (
-            <div className="text-center p-8 bg-white border rounded text-gray-500">Nenhuma categoria criada.</div>
+            <div className="text-center p-8 bg-card border rounded text-muted-foreground">Nenhuma categoria criada.</div>
           )}
         </SortableContext>
       </DndContext>

@@ -67,9 +67,9 @@ export function DeliveryTrackingMap({ orderId, customerLatitude, customerLongitu
       {/* Distance overlay */}
       {distance !== null && (
         <div className="absolute top-3 left-3 right-3 z-[1000] pointer-events-none">
-          <div className="bg-white/90 backdrop-blur rounded-lg shadow-md border px-3 py-2 max-w-xs mx-auto text-center pointer-events-auto">
+          <div className="bg-card/90 backdrop-blur rounded-lg shadow-md border px-3 py-2 max-w-xs mx-auto text-center pointer-events-auto">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Distância</p>
-            <p className="text-lg font-black text-blue-600">{formatDistance(distance)}</p>
+            <p className="text-lg font-black text-primary">{formatDistance(distance)}</p>
           </div>
         </div>
       )}
@@ -77,7 +77,7 @@ export function DeliveryTrackingMap({ orderId, customerLatitude, customerLongitu
       {/* Stale position warning */}
       {isStale && lastUpdateSeconds !== null && (
         <div className="absolute bottom-3 left-3 right-3 z-[1000]">
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 flex items-center gap-2 text-xs text-yellow-700">
+          <div className="bg-warning-1 border border-yellow-200 rounded-lg px-3 py-2 flex items-center gap-2 text-xs text-warning-2">
             <Clock className="size-3.5 shrink-0" />
             Última posição: {lastUpdateSeconds}s atrás
           </div>
@@ -87,7 +87,7 @@ export function DeliveryTrackingMap({ orderId, customerLatitude, customerLongitu
       {/* No tracking data */}
       {!delivererPos && !loading && (
         <div className="absolute inset-0 z-[999] flex items-center justify-center bg-black/10">
-          <div className="bg-white rounded-lg shadow-md px-4 py-3 text-sm text-muted-foreground text-center">
+          <div className="bg-card rounded-lg shadow-md px-4 py-3 text-sm text-muted-foreground text-center">
             Aguardando localização do entregador...
           </div>
         </div>

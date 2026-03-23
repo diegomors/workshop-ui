@@ -9,7 +9,7 @@ interface MapSearchBarProps {
 
 export function MapSearchBar({ onSearch }: MapSearchBarProps) {
   return (
-    <div className="absolute top-4 left-4 right-4 z-[1000] flex items-center bg-white rounded-full shadow-lg border border-slate-200 px-4 py-2 hover:shadow-xl transition-shadow">
+    <div className="absolute top-4 left-4 right-4 z-[1000] flex items-center bg-card rounded-full shadow-lg border border-slate-200 px-4 py-2 hover:shadow-xl transition-shadow">
       <Search className="w-5 h-5 text-slate-400 mr-2 shrink-0" />
       <input
         type="text"

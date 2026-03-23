@@ -131,13 +131,13 @@ export default function OrderTracking({ params }: OrderTrackingProps) {
         )}
 
         {order.delivery_code && (order.status === 'PRONTO_PARA_RETIRADA' || order.status === 'EM_ROTA') && (
-          <Card className="bg-yellow-50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30">
+          <Card className="bg-warning-1 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-900/30">
             <CardContent className="p-6 text-center space-y-2">
               <span className="text-sm font-medium text-yellow-800 dark:text-yellow-400">Código de Entrega</span>
               <div className="text-4xl font-black tracking-[0.5em] text-yellow-900 dark:text-yellow-200 pl-[0.5em]">
                 {order.delivery_code}
               </div>
-              <p className="text-xs text-yellow-700 dark:text-yellow-500">
+              <p className="text-xs text-warning-2 dark:text-yellow-500">
                 Informe este código ao entregador para confirmar o recebimento.
               </p>
             </CardContent>

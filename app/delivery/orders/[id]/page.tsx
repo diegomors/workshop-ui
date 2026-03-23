@@ -112,13 +112,13 @@ export default function DeliveryOrderPage({ params }: DeliveryOrderPageProps) {
   return (
     <div className="absolute inset-x-0 bottom-0 top-0 overflow-hidden bg-slate-50 flex flex-col">
       {/* Header */}
-      <div className="p-4 bg-white border-b shadow-sm z-[1001] flex items-center justify-between">
+      <div className="p-4 bg-card border-b shadow-sm z-[1001] flex items-center justify-between">
         <h1 className="font-extrabold text-xl text-slate-900 tracking-tight flex items-center gap-2">
           Pedido #{order.id.slice(0, 8)}
         </h1>
         <div className="flex items-center gap-3">
           {isEnRoute && <TrackingIndicator isActive={trackingActive} />}
-          <div className="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-black rounded-full uppercase tracking-wider">
+          <div className="px-2.5 py-1 bg-warning-1 text-warning-2 text-xs font-black rounded-full uppercase tracking-wider">
             {order.status}
           </div>
         </div>
@@ -134,16 +134,16 @@ export default function DeliveryOrderPage({ params }: DeliveryOrderPageProps) {
         {/* Distance overlay */}
         {distance !== null && (
           <div className="absolute top-4 left-4 right-4 z-[1000] pointer-events-none">
-            <div className="bg-white/90 backdrop-blur rounded-xl shadow-lg border border-slate-200 p-3 max-w-xs mx-auto text-center pointer-events-auto">
+            <div className="bg-card/90 backdrop-blur rounded-xl shadow-lg border border-slate-200 p-3 max-w-xs mx-auto text-center pointer-events-auto">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">Distância até o Cliente</p>
-              <p className="text-2xl font-black text-blue-600 mt-1">{formatDistance(distance)}</p>
+              <p className="text-2xl font-black text-primary mt-1">{formatDistance(distance)}</p>
             </div>
           </div>
         )}
       </div>
 
       {/* Action Buttons */}
-      <div className="bg-white border-t p-4 flex gap-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+      <div className="bg-card border-t p-4 flex gap-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
         <Link href={`/delivery/orders/${order.id}/chat`} className="flex-1">
           <Button variant="outline" className="w-full h-12 font-bold gap-2 text-slate-700">
             <MessageCircle className="w-5 h-5" />

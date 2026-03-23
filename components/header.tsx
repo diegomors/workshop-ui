@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { signOut } from '@/lib/actions/auth'
-import { Button } from '@/components/ui/button'
+import { MizzText } from '@/components/mizz/MizzText'
 
 export async function Header() {
   const supabase = await createClient()
@@ -13,16 +13,23 @@ export async function Header() {
   }
 
   return (
-    <header className="flex flex-row items-center justify-between p-4 bg-white border-b shadow-sm sticky top-0 z-40">
-      <div className="font-bold text-2xl text-blue-600">Mizz</div>
+    <header className="flex items-center justify-between h-14 px-4 bg-background border-b border-border sticky top-0 z-40">
+      <MizzText variant="subtitle" className="text-primary font-bold">
+        Mizz
+      </MizzText>
       {profile && (
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-3 text-sm">
           <div className="flex flex-col items-end">
-             <span className="font-medium">{profile.name}</span>
-             <span className="text-xs text-gray-500 capitalize">{profile.role}</span>
+            <MizzText variant="body" className="font-medium">{profile.name}</MizzText>
+            <MizzText variant="caption" className="text-muted-foreground capitalize">{profile.role}</MizzText>
           </div>
           <form action={signOut}>
-            <Button type="submit" variant="outline" size="sm">Sair</Button>
+            <button
+              type="submit"
+              className="px-3 py-1.5 text-sm font-medium rounded-lg border border-border bg-background hover:bg-neutral-20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            >
+              Sair
+            </button>
           </form>
         </div>
       )}

@@ -100,7 +100,7 @@ export function HomeMapClient({ initialRestaurants }: HomeMapClientProps) {
 
       {/* Bottom Floating Stats / Info (Optional) */}
       <div className="absolute bottom-6 right-4 z-[1000] flex flex-col gap-2 pointer-events-none">
-        <div className="bg-white/90 backdrop-blur rounded-full px-3 py-1.5 shadow-sm border border-slate-200 pointer-events-auto">
+        <div className="bg-card/90 backdrop-blur rounded-full px-3 py-1.5 shadow-sm border border-slate-200 pointer-events-auto">
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
             {filteredRestaurants.length} restaurantes encontrados
           </p>
