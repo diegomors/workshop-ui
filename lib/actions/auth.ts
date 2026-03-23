@@ -57,6 +57,30 @@ export async function signOut() {
   redirect('/login')
 }
 
+/**
+ * Switches the current user's role and redirects to the appropriate dashboard.
+ */
+export async function switchRole(role: 'cliente' | 'admin' | 'cozinha' | 'entregador') {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) redirect('/login')
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ role })
+    .eq('id', user.id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  if (role === 'admin') redirect('/admin')
+  if (role === 'cozinha') redirect('/admin/orders')
+  if (role === 'entregador') redirect('/delivery')
+  redirect('/')
+}
+
 export async function resetPassword(data: ResetPasswordInput) {
   const supabase = await createClient()
 
